@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Oil-Well Pressure AI | Portfolio</title>
+<style>
+:root{--bg:#0b1020;--card:#121a2f;--ink:#eef3ff;--muted:#aab6d3;--accent:#7dd3fc;--line:#263451}
+*{box-sizing:border-box} body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+.wrap{max-width:1100px;margin:auto;padding:32px 20px 80px}.hero{padding:72px 0 48px}.eyebrow{color:var(--accent);font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+h1{font-size:clamp(2.4rem,6vw,5rem);line-height:1.02;margin:.3em 0}.lead{font-size:1.2rem;color:var(--muted);max-width:780px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:30px 0}.metric,.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px}
+.metric b{display:block;font-size:1.6rem}.metric span{color:var(--muted)} section{padding:34px 0;border-top:1px solid var(--line)}
+h2{font-size:2rem;margin:0 0 14px}.two{display:grid;grid-template-columns:1fr 1fr;gap:24px}.card img,.wide img{width:100%;border-radius:12px;background:#fff}
+.wide{background:var(--card);border:1px solid var(--line);padding:18px;border-radius:18px}.tag{display:inline-block;border:1px solid var(--line);padding:6px 10px;border-radius:999px;margin:4px;color:var(--muted)}
+table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden}th,td{padding:12px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--accent)}
+.note{color:var(--muted)} footer{padding-top:30px;color:var(--muted)}
+@media(max-width:760px){.grid{grid-template-columns:1fr 1fr}.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body><main class="wrap">
+<header class="hero">
+<div class="eyebrow">Machine Learning · Reservoir Engineering</div>
+<h1>Predicting the continuation of oil-well pressure recovery curves.</h1>
+<p class="lead">A machine-learning case study that reconstructs temporally unobserved pressure segments from partial curves, comparing Random Forest, XGBoost, MLP and TabPFN-3.</p>
+<div class="grid">
+<div class="metric"><b>XGBoost</b><span>Best overall model</span></div>
+<div class="metric"><b>0.3655 MPa</b><span>Mean RMSE</span></div>
+<div class="metric"><b>0.9922</b><span>Mean R²</span></div>
+<div class="metric"><b>5 runs</b><span>Seeds 42–46</span></div>
+</div>
+</header>
+
+<section><h2>The challenge</h2>
+<p>Pressure recovery tests may be only partially observed. The goal was to use the available temporal segment of each well curve, together with operational, petrophysical and temporal features, to estimate the subsequent unobserved pressure trajectory.</p>
+<p class="note">This is a temporal forecasting/reconstruction formulation, not generic random missing-value imputation.</p></section>
+
+<section><h2>Experimental design</h2>
+<div class="two">
+<div class="card"><h3>Models</h3><p>Random Forest · XGBoost · MLP · TabPFN-3</p><h3>Optimization</h3><p>Optuna/TPE · 50 trials for RF, XGB and MLP · final 20% of each training curve reserved for temporal validation.</p></div>
+<div class="card"><h3>Evaluation</h3><p>Five independent runs with the same seeds across models. Metrics: RMSE, MAE, R², RMSE per curve, residuals and error by prediction horizon.</p><h3>Interpretability</h3><p>SHAP global importance, beeswarm analysis and 3D response surfaces.</p></div>
+</div></section>
+
+<section><h2>Final model comparison</h2>
+<table><thead><tr><th>Model</th><th>RMSE</th><th>MAE</th><th>R²</th></tr></thead><tbody>
+<tr><td><b>XGBoost</b></td><td><b>0.3655 ± 0.0023</b></td><td>0.2292 ± 0.0026</td><td><b>0.9922 ± 0.0001</b></td></tr>
+<tr><td>Random Forest</td><td>0.3723 ± 0.0058</td><td>0.2104 ± 0.0028</td><td>0.9919 ± 0.0003</td></tr>
+<tr><td>MLP</td><td>0.4909 ± 0.0230</td><td>0.2853 ± 0.0187</td><td>0.9860 ± 0.0013</td></tr>
+<tr><td>TabPFN-3</td><td>0.9212 ± 0.0041</td><td><b>0.0980 ± 0.0012</b></td><td>0.9507 ± 0.0004</td></tr>
+</tbody></table></section>
+
+<section><h2>What the prediction looks like</h2><div class="wide"><img src="assets/representative_curves.png" alt="Representative curve reconstructions"></div>
+<p>Representative curves were selected objectively at the 10th, 25th, 50th, 75th, 90th and 95th percentiles of per-curve RMSE.</p></section>
+
+<section><h2>Where the model becomes less certain</h2><div class="wide"><img src="assets/error_vs_prediction_horizon.png" alt="Error by prediction horizon"></div>
+<p>The reconstruction error generally increases with temporal distance from the last observed point. This finding is central to responsible use of the model in engineering workflows.</p></section>
+
+<section><h2>Explainable AI</h2>
+<div class="two">
+<div class="wide"><img src="assets/shap_global_importance.png" alt="SHAP importance"></div>
+<div class="wide"><img src="assets/shap_beeswarm.png" alt="SHAP beeswarm"></div>
+</div>
+<p>Reservoir pressure is the dominant feature, followed by bottomhole pressure and temporal descriptors. The learned relationships are therefore connected to physically meaningful aspects of the well/reservoir state.</p></section>
+
+<section><h2>Model response surfaces</h2><div class="wide"><img src="assets/xgboost_3d_response_surfaces.png" alt="3D response surfaces"></div></section>
+
+<section><h2>Practical value</h2>
+<div class="two">
+<div class="card"><h3>Potential uses</h3><p>Reconstruct incomplete tests, estimate subsequent pressure behavior, support test interpretation and flag deviations as new observations arrive.</p></div>
+<div class="card"><h3>Important limitation</h3><p>The model is a support tool. Longer prediction horizons are less accurate, and field deployment requires uncertainty controls and validation on new wells/reservoir conditions.</p></div>
+</div></section>
+
+<section><h2>Technology</h2>
+<p><span class="tag">Python</span><span class="tag">Pandas</span><span class="tag">Scikit-learn</span><span class="tag">XGBoost</span><span class="tag">Optuna</span><span class="tag">SHAP</span><span class="tag">TabPFN</span><span class="tag">Explainable AI</span></p></section>
+
+<footer>Replace this footer with your name · GitHub · LinkedIn before publishing.</footer>
+</main></body></html>

@@ -1,0 +1,9 @@
+numpy
+pandas
+scikit-learn
+xgboost
+optuna
+shap
+matplotlib
+openpyxl
+# tabpfn  # install according to the environment used for the original TabPFN-3 experiment
